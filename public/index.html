@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Real-time Chat</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="messages"></div>
+  <div id="input-box">
+    <input type="text" id="messageInput" placeholder="Napište zprávu...">
+    <button onclick="sendMessage()">Odeslat</button>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.3/socket.io.js"></script>
+  <script>
+    const socket = io();
+
+    const username = prompt("Zvolte si jméno:");
+    socket.emit('login', username);
+
+    socket.on('message', (msg) => {
+      displayMessage(msg);
+    });
+
+    function sendMessage() {
+      const messageInput = document.getElementById('messageInput');
+      const message = messageInput.value;
+
+      if (message.trim() !== '') {
+        socket.emit('message', message);
+        messageInput.value = '';
+      }
+    }
+
+    function displayMessage(msg) {
+      const messagesDiv = document.getElementById('messages');
+      const messageP = document.createElement('p');
+      messageP.textContent = `${msg.user}: ${msg.text}`;
+      messagesDiv.appendChild(messageP);
+    }
+  </script>
+</body>
+</html>
